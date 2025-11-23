@@ -1,11 +1,11 @@
 {
-    "api_id": 24072647,
-    "api_hash": "74326637e71d227a805afb5dfb40d8f9",
-    "master_account_id": 7919687304,
+    "api_id": .......,
+    "api_hash": "........",
+    "master_account_id": ..........,
     "bot_mappings": [
         {
-            "source_chat": -1002601786270,
-            "target_bot": "@iketoujibot"
+            "source_chat": ...........,
+            "target_bot": "........."
         }
     ],
     "proxy": null
