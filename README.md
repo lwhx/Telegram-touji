@@ -1,49 +1,40 @@
 # Telegram Stealth Relay Bot (Dockerized)
 
-**Telegram 消息无痕搬运/偷鸡机器人**
+## 🚀 一键安装（交互填写配置）
 
-[![Docker](https://img.shields.io/badge/Docker-Enabled-blue.svg)](https://www.docker.com/)
-[![Python](https://img.shields.io/badge/Python-3.10+-yellow.svg)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+```bash
+REPO_URL="https://github.com/<你的用户名>/Telegram-touji.git" \
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/<你的用户名>/Telegram-touji/main/scripts/install.sh)"
+```
 
-* 项目来源：https://github.com/ikun245/Telegram-toujibot
-* 通过AI修复原版没有自动转发的功能并且保留原版命令功能，实现Docker化一键部署。
-* 这是一个基于 [Telethon](https://docs.telethon.dev/) 开发的高级 Telegram 消息转发系统。它结合了 **Userbot** (用户客户端) 和 **Bot API** (机器人客户端) 的优势，能够从任何您已加入的频道/群组（包括受限频道）监听消息，并以**“无痕模式”**（去除“转发自 xxx”标签）转发到您的目标频道。
+> 注意：请替换为你自己的 GitHub 用户名/仓库地址，避免指向他人仓库。
 
-## ✨ 核心功能
+脚本会交互询问并生成：
+- `config.json`
+- `.env`
 
-* **🕵️ 全能监听 (Userbot)**：使用真实用户账号监听，突破普通机器人无法加入频道的限制。支持监听公开频道、私有群组、甚至机器人。
-* **👻 无痕转发 (Stealth Mode)**：
-    * 通过机器人“复制并重新发送”的方式运作。
-    * **彻底去除**原消息的 `Forwarded from` 来源标签。
-    * 目标频道的成员看起来就像是机器人原创发布的消息。
-* **📦 完美支持相册 (Media Group)**：内置智能缓存与锁机制，自动识别并合并多张图片/视频为一条完整的相册消息，拒绝刷屏。
-* **🛡️ 智能命令过滤系统**：
-    * **管理安全**：在机器人私聊中发送管理命令（如 `/add_listen`）时，系统会自动拦截，**绝不转发**到公开频道。
-    * **交互隔离**：Userbot 的回复带有特殊标记（🤖），RelayBot 会自动识别并拦截，确保频道内容纯净。
-* **📢 多路分发**：支持监听多个源频道，并将消息汇总转发到配置的一个或多个目标频道。
-* **🐳 Docker 一键部署**：提供完整的 Docker Compose 配置，支持掉线自动重启，部署维护极其简单。
+并自动执行 `docker compose up -d --build`。
 
-## 🛠️ 架构原理
+## 🔧 当前已完成的优化
 
-本项目由两个协同工作的 Docker 容器组成：
+1. **统一配置模块**：`telegram_bot.py` 与 `bot_relay.py` 都改为通过 `common_config.py` 读取配置，减少重复逻辑。
+2. **结构化日志**：通过 `structured_logger.py` 输出 JSON 日志，覆盖配置加载、映射构建、消息发送关键路径。
+3. **限流 + 重试 + 死信**：通过 `delivery.py` 为转发链路加入限流、重试、DLQ（`logs/*.jsonl`）。
+4. **.env 支持 + 热重载**：支持 `.env` 覆盖配置；运行时检测 `config.json` 变更并热重载。
+5. **最小单元测试**：新增配置解析与命令解析测试。
 
-1.  **Userbot (`telegram_bot.py`)**：
-    * **角色**：监听者 (The Listener)。
-    * **功能**：使用您的个人账号登录，监听 `config.json` 中配置的源频道，将消息转发给中间机器人。
-    * **交互**：负责处理管理命令，并以 `🤖` 前缀回复执行结果。
-2.  **RelayBot (`bot_relay.py`)**：
-    * **角色**：发布者 (The Publisher)。
-    * **功能**：使用机器人 Token 登录，接收来自 Userbot 的私聊消息。
-    * **处理**：缓存相册媒体、过滤掉所有以 `/` 开头的命令和以 `🤖` 开头的系统回复，最后将清洗后的内容发送到最终目标频道。
+## 📁 关键文件
 
-## 🎮 使用命令
+- `common_config.py`：统一配置读取/保存、`.env` 加载、环境变量覆盖。
+- `structured_logger.py`：JSON logging。
+- `delivery.py`：限流、重试、DLQ。
+- `command_utils.py`：命令解析。
+- `tests/`：最小单元测试。
 
-* /add_listen,添加监听任务,/add_listen -100123456 @mybot
-* /remove_listen,移除监听任务,/remove_listen -100123456
-* /list_listen,查看当前监听列表,/list_listen
-* /join,Userbot 加入频道,/join https://t.me/xxchannel
-* /leave,Userbot 退出频道,/leave @xxchannel
+## 🧪 本地测试
 
-## 🚀 部署指南
-部署教程发布在我的博客，文章地址：https://ike-nicholas.xyz/archives/telegram-xiao-xi-wu-hen-ban-yun-tou-ji-ji-qi-ren
+```bash
+python -m unittest discover -s tests -v
+python -m py_compile telegram_bot.py bot_relay.py common_config.py structured_logger.py delivery.py command_utils.py
+bash -n scripts/install.sh
+```
