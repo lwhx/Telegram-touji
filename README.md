@@ -20,7 +20,6 @@
 
 ## 🚀 一键安装（交互填写配置）
 
-> 你的 GitHub 用户名是：`ike666888`，以下命令已按你的用户名写好。
 
 ```bash
 REPO_URL="https://github.com/ike666888/Telegram-touji.git" \
@@ -78,8 +77,3 @@ bash -n scripts/install.sh
 ```
 
 ---
-
-## 📌 说明
-
-- 该 README 已去掉“他人仓库占位符”，并固定为你提供的用户名 `ike666888`。
-- 若仓库名变化，只需替换命令中的 `Telegram-touji`。
