@@ -10,6 +10,8 @@ services:
     command: python telegram_bot.py
     environment:
       - TZ=Asia/Shanghai
+    env_file:
+      - .env
     stdin_open: true
     tty: true
 
@@ -23,3 +25,5 @@ services:
     command: python bot_relay.py
     environment:
       - TZ=Asia/Shanghai
+    env_file:
+      - .env
