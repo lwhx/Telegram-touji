@@ -6,8 +6,6 @@
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/ike666888/Telegram-touji/main/scripts/install.sh)"
 ```
 
-> 注意：请替换为你自己的 GitHub 用户名/仓库地址，避免指向他人仓库。
-
 脚本会交互询问并生成：
 - `config.json`
 - `.env`
